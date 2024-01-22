@@ -6,3 +6,31 @@
     display: flex;
     justify-content: center;
 }
+
+.weather-display-container {
+    width: 50vw;
+    background-color: gray;
+    position: absolute;
+    margin: 10vw;
+    right: 0;
+    border-radius: 25px;
+    border: 5px solid purple;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    
+}
+
+.weather-display-container > h1 {
+    color: darkblue;
+    padding: 7px;
+    font-size: 3rem;
+}
+
+.hidden {
+    display: none;
+}
+
+.weather-display-container > p {
+    font-size: 2rem;
+    padding: 7px;
+}

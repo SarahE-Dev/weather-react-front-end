@@ -2,12 +2,15 @@ import React, { Component } from 'react'
 import './Form.css'
 import axios from 'axios'
 import Weather from '../Weather/Weather'
+import {Slide, toast} from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
 
 export class Form extends Component {
     state = {
         cityInput: "",
         weatherList: [],
-        weatherDisplayed: {}
+        weatherDisplayed: {},
+        displayHidden: true
     }
 
     async componentDidMount(){
@@ -31,23 +34,23 @@ export class Form extends Component {
         try {
             if(this.state.cityInput !== ""){
                 let newWeather = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${this.state.cityInput}&appid=${'89a0f31643af128d33449223f3e58dfc'}`)
-                console.log(newWeather.data.weather[0].description);
+                console.log(newWeather);
                 let weatherDisplay = await axios.post('http://localhost:3001/weather/add-location', {
                     location: newWeather.data.name,
                     country: newWeather.data.sys.country,
                     temperature: newWeather.data.main.temp,
                     description: newWeather.data.weather[0].description
                 })
-                console.log(weatherDisplay);
                 let newArray = [...this.state.weatherList, weatherDisplay.data.payload]
                 this.setState({
                     weatherList: newArray,
-                    weatherDisplayed: weatherDisplay
+                    weatherDisplayed: weatherDisplay.data.payload,
+                    displayHidden: false 
                 })
                 
             }
         } catch (error) {
-            console.log(error);
+            toast.error('Please enter a correct city.')
         }
         this.setState({
             cityInput: ""
@@ -62,8 +65,15 @@ export class Form extends Component {
         })
     }
 
-    handleWeatherDisplay = (id) => {
-        
+    handleWeatherDisplay = (weather) => {
+        this.setState({
+            weatherDisplayed: weather,
+            displayHidden: false
+        })
+    }
+
+    convertToFahrenheit = (k) => {
+        return Math.round((k - 273.15) * 1.8 + 32)
     }
 
   render() {
@@ -79,12 +89,17 @@ export class Form extends Component {
             <ul>
                 {this.state.weatherList.map((item)=>{
                     return (
-                       <Weather key={item._id}
+                       <Weather key={item._id} handleWeatherDisplay={this.handleWeatherDisplay}
                        handleCityOnDelete={this.handleCityOnDelete} 
                        weather={item} /> 
                     )
                 })}
             </ul>
+        </div>
+        <div className={`weather-display-container ${this.state.displayHidden ? "hidden" : ""}`} >
+            <h1>{this.state.weatherDisplayed.location}, {this.state.weatherDisplayed.country}</h1>
+            <p>Temperature: {this.convertToFahrenheit(this.state.weatherDisplayed.temperature)} °F</p>
+            <p>{this.state.weatherDisplayed.description}</p>
         </div>
       </div>
     )
