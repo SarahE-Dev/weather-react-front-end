@@ -1,0 +1,8 @@
+#city {
+    height: 30px;
+    font-size: 14px;
+}
+.form-container {
+    display: flex;
+    justify-content: center;
+}
