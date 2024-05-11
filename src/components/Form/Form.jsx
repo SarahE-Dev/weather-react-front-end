@@ -5,6 +5,7 @@ import Weather from '../Weather/Weather'
 import {Slide, toast} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 
+
 export class Form extends Component {
     state = {
         cityInput: "",
@@ -31,15 +32,17 @@ export class Form extends Component {
 
     handleOnSubmit = async (event) =>{
         event.preventDefault()
+        
         try {
             if(this.state.cityInput !== ""){
-                let newWeather = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${this.state.cityInput}&appid=${'89a0f31643af128d33449223f3e58dfc'}`)
+                let newWeather = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${this.state.cityInput}&appid=${import.meta.env.VITE_API_KEY}`)
                 console.log(newWeather);
                 let weatherDisplay = await axios.post('http://localhost:3001/weather/add-location', {
                     location: newWeather.data.name,
                     country: newWeather.data.sys.country,
                     temperature: newWeather.data.main.temp,
-                    description: newWeather.data.weather[0].description
+                    description: newWeather.data.weather[0].description,
+                    icon: newWeather.data.weather[0].icon
                 })
                 let newArray = [...this.state.weatherList, weatherDisplay.data.payload]
                 this.setState({
@@ -100,6 +103,7 @@ export class Form extends Component {
             <h1>{this.state.weatherDisplayed.location}, {this.state.weatherDisplayed.country}</h1>
             <p>Temperature: {this.convertToFahrenheit(this.state.weatherDisplayed.temperature)} °F</p>
             <p>{this.state.weatherDisplayed.description}</p>
+            <img src={`https://openweathermap.org/img/wn/${this.state.weatherDisplayed.icon}@2x.png`} alt="weather icon" />
         </div>
       </div>
     )
